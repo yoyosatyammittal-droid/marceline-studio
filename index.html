@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marceline Studio — Marketing · Branding · Events</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#DF0000;
+  --red-dark:#8B0000;
+  --black:#060402;
+  --off-black:#0F0D0A;
+  --charcoal:#1C1A17;
+  --white:#FAFAF7;
+  --cream:#F2EDE3;
+  --muted:rgba(250,250,247,0.42);
+  --border:rgba(250,250,247,0.07);
+  --border-red:rgba(223,0,0,0.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--black);color:var(--white);
+  font-family:'Barlow',sans-serif;font-weight:300;
+  cursor:none;overflow-x:hidden;
+}
+
+/* ══ CURSOR ══ */
+#cur{position:fixed;width:8px;height:8px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s,border-radius .3s;mix-blend-mode:normal}
+#cur.link{width:48px;height:48px;background:transparent;border:1px solid var(--red)}
+#cur.img{width:80px;height:80px;background:rgba(223,0,0,0.08);border:1px solid var(--red);border-radius:0}
+#cur-label{position:fixed;pointer-events:none;z-index:9998;font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:.2em;color:var(--red);transform:translate(-50%,-50%);opacity:0;transition:opacity .2s;text-transform:uppercase}
+#cur-label.show{opacity:1}
+
+/* ══ LOADER ══ */
+#loader{position:fixed;inset:0;background:var(--black);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loader-diamond{width:20px;height:20px;background:var(--red);transform:rotate(45deg);animation:ldPulse 1.2s ease-in-out infinite}
+.loader-text{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.45em;color:rgba(250,250,247,0.3);text-transform:uppercase}
+.loader-bar{width:200px;height:1px;background:rgba(250,250,247,0.08);position:relative;overflow:hidden}
+.loader-progress{height:100%;background:var(--red);width:0%;animation:ldProgress 2s ease forwards}
+@keyframes ldPulse{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.3)}}
+@keyframes ldProgress{0%{width:0}100%{width:100%}}
+
+/* ══ NAV ══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;transition:background .4s,backdrop-filter .4s}
+nav.solid{background:rgba(6,4,2,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-diamond{width:8px;height:8px;background:var(--red);transform:rotate(45deg);border-radius:1px;flex-shrink:0}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--white);letter-spacing:.45em}
+.nav-links{display:flex;align-items:center;gap:36px}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);text-decoration:none;position:relative;transition:color .25s}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--red);transition:width .3s}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:9px 24px;text-decoration:none;transition:background .25s,color .25s}
+.nav-cta:hover{background:var(--red);color:var(--black)}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:none;padding:4px}
+.nav-burger span{display:block;width:24px;height:1px;background:var(--white);transition:all .3s}
+.nav-burger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* ══ MOBILE MENU ══ */
+.mob-menu{position:fixed;inset:0;background:var(--black);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;pointer-events:none;transition:opacity .4s}
+.mob-menu.open{opacity:1;pointer-events:all}
+.mob-menu a{font-family:'Cinzel',serif;font-size:clamp(28px,6vw,52px);font-weight:400;color:var(--white);text-decoration:none;padding:10px 0;border-bottom:1px solid var(--border);width:280px;text-align:center;transition:color .25s}
+.mob-menu a:hover{color:var(--red)}
+
+/* ══ HERO ══ */
+#hero{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--black)}
+.hero-noise{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;opacity:.4}
+.hero-inner{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:1fr 1fr;padding:0 52px;align-items:center;gap:48px;padding-top:68px}
+.hero-left{padding:80px 0 60px}
+
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.55em;color:var(--red);text-transform:uppercase;display:flex;align-items:center;gap:14px;margin-bottom:36px;opacity:0;animation:fadeUp .7s ease .5s forwards}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--red)}
+
+.hero-headline{font-family:'Cinzel',serif;font-weight:300;font-size:clamp(56px,7.5vw,108px);line-height:.92;color:var(--white);margin-bottom:32px}
+.hero-headline .line{display:block;overflow:hidden}
+.hero-headline .line span{display:block;transform:translateY(110%);animation:lineUp .9s cubic-bezier(.16,1,.3,1) forwards}
+.hero-headline .line:nth-child(1) span{animation-delay:.7s}
+.hero-headline .line:nth-child(2) span{animation-delay:.85s}
+.hero-headline .line:nth-child(3) span{animation-delay:1s;color:var(--red);font-style:italic}
+
+.hero-sub{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(15px,1.4vw,18px);color:var(--muted);line-height:1.7;max-width:420px;margin-bottom:48px;opacity:0;animation:fadeUp .8s ease 1.2s forwards}
+
+.hero-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s ease 1.4s forwards}
+.btn-red{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;background:var(--red);color:var(--black);padding:14px 32px;text-decoration:none;font-weight:500;transition:background .25s,transform .2s;display:inline-block}
+.btn-red:hover{background:#FF1111;transform:translateY(-1px)}
+.btn-outline{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;border:1px solid var(--border);color:var(--white);padding:13px 32px;text-decoration:none;transition:border-color .25s,color .25s;display:inline-block}
+.btn-outline:hover{border-color:var(--red);color:var(--red)}
+
+.hero-right{opacity:0;animation:slideLeft .9s ease .8s forwards}
+.hero-img-wrap{position:relative}
+.hero-img-wrap::before{content:'';position:absolute;top:-16px;left:-16px;right:16px;bottom:16px;border:1px solid var(--border-red);z-index:0}
+.hero-img{width:100%;aspect-ratio:3/4;max-height:72vh;object-fit:cover;position:relative;z-index:1;display:block}
+.hero-img-caption{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:32px 24px 20px;background:linear-gradient(transparent,rgba(6,4,2,.92))}
+.hero-img-caption p{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.4em;color:var(--red);text-transform:uppercase}
+
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:3;opacity:0;animation:fadeIn .7s ease 1.8s forwards}
+.hero-scroll span{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:.45em;color:rgba(250,250,247,0.28);text-transform:uppercase}
+.scroll-bar{width:1px;height:48px;background:linear-gradient(var(--red),transparent);animation:scrollPulse 2s ease-in-out infinite}
+
+/* ══ MARQUEE ══ */
+.marquee-section{background:var(--charcoal);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:18px 0}
+.marquee-track{display:flex;white-space:nowrap;animation:marquee 28s linear infinite}
+.marquee-track:hover{animation-play-state:paused}
+.marquee-item{font-family:'Cinzel',serif;font-style:italic;font-weight:400;font-size:clamp(22px,3vw,36px);color:rgba(250,250,247,0.22);padding:0 40px;flex-shrink:0}
+.marquee-sep{color:var(--red);margin:0 16px;font-size:.5em;vertical-align:middle}
+
+/* ══ ABOUT ══ */
+#about{background:var(--white);padding:120px 52px;color:var(--black)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.section-eye{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.section-eye::before{content:'';width:22px;height:1px;background:var(--red)}
+.section-title{font-family:'Cinzel',serif;font-weight:400;font-size:clamp(32px,4vw,56px);line-height:1.08;margin-bottom:24px}
+.section-title em{font-style:italic;color:var(--red)}
+.about-body{font-size:16px;line-height:1.85;color:#444;font-weight:300;max-width:500px;margin-bottom:36px}
+.stats-col{display:flex;flex-direction:column;gap:2px}
+.stat-card{display:grid;grid-template-columns:90px 1fr;align-items:center;padding:24px 28px;background:#F4F0E8;border-left:3px solid var(--red);transition:background .25s}
+.stat-card:hover{background:#ECE7DC}
+.stat-num{font-family:'Cinzel',serif;font-style:italic;font-size:48px;font-weight:400;color:var(--red);line-height:1}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#888;line-height:1.5}
+
+/* ══ SERVICES ══ */
+#services{background:var(--off-black);padding:120px 0}
+.services-header{padding:0 52px;margin-bottom:80px}
+.services-header .section-title{color:var(--white)}
+.service-row{display:grid;grid-template-columns:1fr 1fr;min-height:500px;border-top:1px solid var(--border);transition:background .3s}
+.service-row:last-of-type{border-bottom:1px solid var(--border)}
+.service-row:hover{background:rgba(223,0,0,0.025)}
+.service-row.rev{direction:rtl}
+.service-row.rev>*{direction:ltr}
+.service-text{padding:60px 52px;display:flex;flex-direction:column;justify-content:center}
+.svc-num{font-family:'Cinzel',serif;font-style:italic;font-size:72px;font-weight:400;color:rgba(223,0,0,0.15);line-height:1;margin-bottom:12px}
+.svc-title{font-family:'Cinzel',serif;font-size:clamp(28px,3vw,42px);font-weight:400;color:var(--white);margin-bottom:6px;letter-spacing:.5px}
+.svc-creative{font-family:'Cinzel',serif;font-style:italic;font-size:14px;color:rgba(223,0,0,0.55);letter-spacing:1px;margin-bottom:18px}
+.svc-desc{font-size:15px;line-height:1.8;color:var(--muted);max-width:400px;margin-bottom:28px}
+.svc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
+.svc-tag{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(250,250,247,0.3);border:1px solid var(--border);padding:4px 10px}
+.svc-link{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--red);text-decoration:none;display:flex;align-items:center;gap:10px;width:fit-content;transition:gap .3s}
+.svc-link:hover{gap:18px}
+.service-img{overflow:hidden;position:relative}
+.service-img img{width:100%;height:100%;object-fit:cover;transition:transform 6s ease;display:block;filter:brightness(.85)}
+.service-row:hover .service-img img{transform:scale(1.04)}
+
+/* ══ WHY ══ */
+#why{background:var(--cream);padding:120px 52px}
+#why .section-title{color:var(--black)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:56px}
+.why-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;transition:background .3s}
+.why-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.why-card:hover{background:#0F0D0A}
+.why-card:hover::before{transform:scaleX(1)}
+.why-card-num{font-family:'Cinzel',serif;font-style:italic;font-size:48px;font-weight:400;color:rgba(223,0,0,0.15);line-height:1}
+.why-card-title{font-family:'Cinzel',serif;font-size:18px;font-weight:600;color:var(--white);letter-spacing:.5px}
+.why-card-body{font-size:13px;line-height:1.8;color:var(--muted);font-weight:300}
+
+/* ══ PROCESS ══ */
+#process{background:var(--charcoal);padding:120px 52px}
+#process .section-title{color:var(--white);margin-bottom:64px}
+.process-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border)}
+.process-step{background:var(--charcoal);padding:36px 24px;position:relative;overflow:hidden;transition:background .3s}
+.process-step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .5s ease}
+.process-step:hover{background:rgba(223,0,0,0.04)}
+.process-step:hover::after{transform:scaleX(1)}
+.ps-num{font-family:'Cinzel',serif;font-style:italic;font-size:48px;font-weight:400;color:rgba(223,0,0,0.15);line-height:1;margin-bottom:18px}
+.ps-title{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--white);margin-bottom:10px}
+.ps-body{font-size:12px;line-height:1.75;color:var(--muted)}
+
+/* ══ TESTIMONIALS ══ */
+#testimonials{background:var(--cream);padding:120px 52px;text-align:center}
+.testi-quote{font-family:'Cinzel',serif;font-style:italic;font-weight:400;font-size:clamp(18px,2.5vw,28px);line-height:1.55;color:var(--black);max-width:720px;margin:0 auto 28px;transition:opacity .4s}
+.testi-attr{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);transition:opacity .4s}
+.testi-dots{display:flex;justify-content:center;gap:10px;margin-top:32px}
+.td{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.15);cursor:none;transition:all .3s}
+.td.active{background:var(--red);width:20px;border-radius:3px}
+
+/* ══ ADD-ONS ══ */
+#addons{background:var(--black);padding:120px 52px}
+#addons .section-title{color:var(--white);margin-bottom:56px}
+.addons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.addon-card{background:var(--off-black);padding:32px 28px;position:relative;border:1px solid var(--border);transition:border-color .3s,background .3s}
+.addon-card:hover{border-color:var(--border-red);background:rgba(223,0,0,0.03)}
+.addon-icon{font-size:22px;margin-bottom:16px}
+.addon-name{font-family:'Cinzel',serif;font-size:16px;font-weight:600;color:var(--white);margin-bottom:6px}
+.addon-tag{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:.4em;color:var(--red);text-transform:uppercase;margin-bottom:12px}
+.addon-desc{font-size:12px;line-height:1.75;color:var(--muted)}
+.addon-new-badge{position:absolute;top:16px;right:16px;font-family:'Barlow Condensed',sans-serif;font-size:7px;letter-spacing:.3em;color:var(--red);border:1px solid var(--border-red);padding:3px 8px;text-transform:uppercase}
+
+/* ══ CTA ══ */
+#cta{background:var(--off-black);padding:160px 52px;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'MARCELINE';font-family:'Cinzel',serif;font-size:clamp(60px,14vw,180px);font-weight:700;color:rgba(223,0,0,0.03);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;letter-spacing:.1em;pointer-events:none}
+.cta-eye{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--red);margin-bottom:32px}
+.cta-title{font-family:'Cinzel',serif;font-weight:300;font-size:clamp(52px,8vw,100px);line-height:.93;color:var(--white);margin-bottom:36px}
+.cta-title em{font-style:italic;color:var(--red)}
+.cta-sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto 48px}
+.cta-actions{display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+
+/* ══ FOOTER ══ */
+footer{background:var(--black);border-top:1px solid var(--border);padding:72px 52px 40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:44px;margin-bottom:56px}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.footer-logo-d{width:6px;height:6px;background:var(--red);transform:rotate(45deg);border-radius:1px}
+.footer-logo-t{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--white);letter-spacing:.45em}
+.footer-tagline{font-family:'Cinzel',serif;font-style:italic;font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.footer-addr{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(250,250,247,0.2);line-height:1.9}
+.footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--red);margin-bottom:18px;opacity:.65}
+.footer-col a{display:block;font-family:'Barlow',sans-serif;font-size:13px;color:rgba(250,250,247,0.38);text-decoration:none;padding:4px 0;transition:color .25s}
+.footer-col a:hover{color:var(--white)}
+.footer-social{display:flex;gap:10px;margin-top:16px}
+.footer-social a{width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-decoration:none;transition:border-color .25s,color .25s}
+.footer-social a:hover{border-color:var(--red);color:var(--red)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom p{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(250,250,247,0.16)}
+.footer-bottom a{color:var(--red);text-decoration:none}
+
+/* ══ REVEAL ANIMATIONS ══ */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-40px);transition:opacity .8s ease,transform .8s ease}
+.reveal-l.visible{opacity:1;transform:translateX(0)}
+.reveal-r{opacity:0;transform:translateX(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal-r.visible{opacity:1;transform:translateX(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+.reveal-d4{transition-delay:.4s}.reveal-d5{transition-delay:.5s}
+
+/* ══ KEYFRAMES ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes lineUp{from{transform:translateY(110%)}to{transform:translateY(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1024px){
+  nav{padding:0 24px}
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .hero-inner{grid-template-columns:1fr;padding:80px 24px 60px}
+  .hero-right{display:none}
+  #about,#services>.services-header,#why,#process,#addons,#cta,#testimonials,footer{padding-left:24px;padding-right:24px}
+  .about-grid{grid-template-columns:1fr;gap:40px}
+  .service-row{grid-template-columns:1fr}
+  .service-row.rev{direction:ltr}
+  .service-img{height:260px}
+  .why-grid{grid-template-columns:1fr 1fr}
+  .process-steps{grid-template-columns:1fr 1fr}
+  .addons-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .why-grid{grid-template-columns:1fr}
+  .process-steps{grid-template-columns:1fr}
+  .addons-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero-headline{font-size:clamp(48px,13vw,72px)}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur"></div>
+<div id="cur-label">VIEW</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-diamond"></div>
+  <div class="loader-bar"><div class="loader-progress"></div></div>
+  <div class="loader-text">Marceline Studio</div>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <a href="#about" onclick="closeMob()">About</a>
+  <a href="#services" onclick="closeMob()">Services</a>
+  <a href="#why" onclick="closeMob()">Why Us</a>
+  <a href="#process" onclick="closeMob()">Process</a>
+  <a href="#contact" onclick="closeMob()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-diamond"></div>
+    <span class="nav-logo-text">MARCELINE</span>
+  </a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#why">Why Us</a>
+    <a href="#process">Process</a>
+    <a href="#addons">Add-ons</a>
+  </div>
+  <a href="#contact" class="nav-cta">Let's Talk</a>
+  <button class="nav-burger" id="burger" onclick="toggleMob()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-noise"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Jaipur · India · Est. 2024</div>
+      <h1 class="hero-headline">
+        <span class="line"><span>WE DON'T</span></span>
+        <span class="line"><span>JUST PLAN.</span></span>
+        <span class="line"><span>We Create.</span></span>
+      </h1>
+      <p class="hero-sub">Marceline Studio is a full-service creative agency — Marketing, Branding & Event Management — built for brands that refuse to be ordinary.</p>
+      <div class="hero-actions">
+        <a href="#services" class="btn-red">Explore Services</a>
+        <a href="#contact" class="btn-outline">Let's Talk</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-wrap">
+        <img class="hero-img" src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&h=1100&fit=crop&q=80" alt="Marceline Studio">
+        <div class="hero-img-caption"><p>Marketing · Branding · Events · Digital</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">Branding<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Marketing<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Event Management<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Digital<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Gifting<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Branding<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Marketing<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Event Management<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Digital<span class="marquee-sep">◆</span></span>
+    <span class="marquee-item">Gifting<span class="marquee-sep">◆</span></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal-l">
+      <div class="section-eye">What is Marceline Studio?</div>
+      <h2 class="section-title">One Studio.<br><em>Four Pillars.</em><br>Zero Compromise.</h2>
+      <p class="about-body">At Marceline Studio, we believe that great brands and great events don't happen by accident — they're crafted with intention, strategy, and an obsession for detail that most agencies simply don't have.<br><br>Born in Jaipur. Built for the world.</p>
+      <a href="#services" class="btn-red">Our Services</a>
+    </div>
+    <div class="stats-col reveal-r">
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">Core<br>Services</div></div>
+      <div class="stat-card"><div class="stat-num">1</div><div class="stat-lbl">Unified<br>Vision</div></div>
+      <div class="stat-card"><div class="stat-num">360°</div><div class="stat-lbl">Full-Service<br>Studio</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-header reveal">
+    <div class="section-eye" style="color:var(--red)">What We Offer</div>
+    <h2 class="section-title" style="color:var(--white)">Choose what you need —<br><em>or let all four work together.</em></h2>
+  </div>
+
+  <div class="service-row">
+    <div class="service-text reveal-l">
+      <div class="svc-num">01</div>
+      <div class="svc-title">Branding</div>
+      <div class="svc-creative">The Mark — Your identity, permanently</div>
+      <p class="svc-desc">We build brands that speak before you do. From logo and visual identity to complete brand systems — everything your brand needs to make a lasting impression.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Logo Design</span>
+        <span class="svc-tag">Brand Strategy</span>
+        <span class="svc-tag">Collateral</span>
+        <span class="svc-tag">Brand Activation</span>
+        <span class="svc-tag">Rebranding</span>
+        <span class="svc-tag">Brand Audit</span>
+      </div>
+      <a href="#contact" class="svc-link">Start a Branding Project →</a>
+    </div>
+    <div class="service-img">
+      <img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?w=900&h=700&fit=crop&q=80" alt="Branding" loading="lazy">
+    </div>
+  </div>
+
+  <div class="service-row rev">
+    <div class="service-text reveal-r">
+      <div class="svc-num">02</div>
+      <div class="svc-title">Events</div>
+      <div class="svc-creative">The Experience — Every moment, crafted</div>
+      <p class="svc-desc">From intimate ceremonies to large-scale corporate gatherings — we handle every detail so you can be fully present in the moment that matters.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Corporate Events</span>
+        <span class="svc-tag">Weddings</span>
+        <span class="svc-tag">Décor & Styling</span>
+        <span class="svc-tag">Event Operations</span>
+        <span class="svc-tag">Invitation Design</span>
+        <span class="svc-tag">Sponsorship</span>
+      </div>
+      <a href="#contact" class="svc-link">Plan Your Event →</a>
+    </div>
+    <div class="service-img">
+      <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=900&h=700&fit=crop&q=80" alt="Events" loading="lazy">
+    </div>
+  </div>
+
+  <div class="service-row">
+    <div class="service-text reveal-l">
+      <div class="svc-num">03</div>
+      <div class="svc-title">Marketing</div>
+      <div class="svc-creative">The Amplifier — Your brand, everywhere</div>
+      <p class="svc-desc">Strategy, content, and campaigns that actually convert. We grow your presence across every channel — organic, paid, and everything in between.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Social Media</span>
+        <span class="svc-tag">Paid Advertising</span>
+        <span class="svc-tag">Content Creation</span>
+        <span class="svc-tag">Influencer Marketing</span>
+        <span class="svc-tag">PR & Communications</span>
+        <span class="svc-tag">Workshops</span>
+      </div>
+      <a href="#contact" class="svc-link">Grow Your Brand →</a>
+    </div>
+    <div class="service-img">
+      <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=900&h=700&fit=crop&q=80" alt="Marketing" loading="lazy">
+    </div>
+  </div>
+
+  <div class="service-row rev">
+    <div class="service-text reveal-r">
+      <div class="svc-num">04</div>
+      <div class="svc-title">Digital</div>
+      <div class="svc-creative">The Presence — Found. Remembered. Trusted.</div>
+      <p class="svc-desc">From building your website to ranking on search engines and AI platforms — we make sure your brand is visible, credible, and impossible to ignore online.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Website Design & Dev</span>
+        <span class="svc-tag">SEO</span>
+        <span class="svc-tag">Email & WhatsApp</span>
+        <span class="svc-tag">Google My Business</span>
+        <span class="svc-tag">Analytics</span>
+        <span class="svc-tag">AI Search</span>
+      </div>
+      <a href="#contact" class="svc-link">Build Your Presence →</a>
+    </div>
+    <div class="service-img">
+      <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&h=700&fit=crop&q=80" alt="Digital" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="section-eye reveal">Why Us</div>
+  <h2 class="section-title reveal" style="color:var(--black)">Why brands choose<br><em>Marceline Studio</em></h2>
+  <div class="why-grid">
+    <div class="why-card reveal reveal-d1">
+      <div class="why-card-num">01</div>
+      <div class="why-card-title">All Under One Roof</div>
+      <div class="why-card-body">No more juggling five vendors. Branding, events, marketing, and digital — one team, one vision, one invoice. Seamless from brief to delivery.</div>
+    </div>
+    <div class="why-card reveal reveal-d2">
+      <div class="why-card-num">02</div>
+      <div class="why-card-title">Hyper-Personalised</div>
+      <div class="why-card-body">Every client gets a dedicated strategy. We don't do cookie-cutter. We listen, we understand, and we build something made entirely for you.</div>
+    </div>
+    <div class="why-card reveal reveal-d3">
+      <div class="why-card-num">03</div>
+      <div class="why-card-title">Creativity Meets Execution</div>
+      <div class="why-card-body">Great ideas mean nothing without great delivery. We obsess over both — the concept and the craft — with equal intensity.</div>
+    </div>
+    <div class="why-card reveal reveal-d4">
+      <div class="why-card-num">04</div>
+      <div class="why-card-title">Transparent Process</div>
+      <div class="why-card-body">You're always in the loop — from the first brief to the final deliverable. No surprises. No excuses. Just clear, honest communication.</div>
+    </div>
+    <div class="why-card reveal reveal-d5">
+      <div class="why-card-num">05</div>
+      <div class="why-card-title">End-to-End Accountability</div>
+      <div class="why-card-body">One point of contact. Full accountability. Zero chaos. We own every outcome and stand behind every deliverable, always.</div>
+    </div>
+    <div class="why-card reveal" style="transition-delay:.6s;background:var(--red)">
+      <div class="why-card-num" style="color:rgba(250,250,247,0.15)">06</div>
+      <div class="why-card-title">Born in Jaipur</div>
+      <div class="why-card-body" style="color:rgba(250,250,247,0.7)">We know this market. We know this city. We know what works for Indian clients — and we bring global quality to every project we take on.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-eye reveal" style="color:var(--red)">How We Work</div>
+  <h2 class="section-title reveal" style="color:var(--white)">A process built<br><em style="color:var(--red)">for precision</em></h2>
+  <div class="process-steps">
+    <div class="process-step reveal reveal-d1">
+      <div class="ps-num">01</div>
+      <div class="ps-title">Discovery Call</div>
+      <p class="ps-body">We listen. You talk. We understand exactly what you need and what you're building toward.</p>
+    </div>
+    <div class="process-step reveal reveal-d2">
+      <div class="ps-num">02</div>
+      <div class="ps-title">Custom Proposal</div>
+      <p class="ps-body">A tailored plan built for your goals — clear scope, clear pricing, no hidden surprises.</p>
+    </div>
+    <div class="process-step reveal reveal-d3">
+      <div class="ps-num">03</div>
+      <div class="ps-title">Creative Kick-off</div>
+      <p class="ps-body">Our team gets to work — designing, planning, and building your vision from the ground up.</p>
+    </div>
+    <div class="process-step reveal reveal-d4">
+      <div class="ps-num">04</div>
+      <div class="ps-title">Execution & Delivery</div>
+      <p class="ps-body">We deliver on time, every time, with zero compromise on quality or attention to detail.</p>
+    </div>
+    <div class="process-step reveal reveal-d5">
+      <div class="ps-num">05</div>
+      <div class="ps-title">Post-Project Support</div>
+      <p class="ps-body">We don't disappear. We're here for revisions, feedback, and long-term partnership.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-eye reveal" style="justify-content:center">
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--red)">Client Voices</span>
+  </div>
+  <div class="testi-quote" id="tq">"Marceline Studio turned our corporate event into an experience our clients are still talking about. Every detail was handled with precision and care."</div>
+  <div class="testi-attr" id="ta">Rahul Verma · Marketing Director, RetailCo Jaipur</div>
+  <div class="testi-dots">
+    <div class="td active" onclick="setT(0)"></div>
+    <div class="td" onclick="setT(1)"></div>
+    <div class="td" onclick="setT(2)"></div>
+  </div>
+</section>
+
+<!-- ADD-ONS -->
+<section id="addons">
+  <div class="section-eye reveal" style="color:var(--red)">Add-on Services</div>
+  <h2 class="section-title reveal">Beyond the four pillars —<br><em style="color:var(--red)">bolt-on anything you need.</em></h2>
+  <div class="addons-grid">
+    <div class="addon-card reveal reveal-d1">
+      <div class="addon-icon">🎁</div>
+      <div class="addon-name">Gifting & Hampers</div>
+      <div class="addon-tag">Corporate & Festive</div>
+      <div class="addon-desc">Corporate gifts, wedding favours, festive hampers and personalised packaging at any scale — thoughtfully curated for every occasion.</div>
+    </div>
+    <div class="addon-card reveal reveal-d2">
+      <div class="addon-icon">📸</div>
+      <div class="addon-name">Photography & Film</div>
+      <div class="addon-tag">Visual Production</div>
+      <div class="addon-desc">Brand shoots, event coverage, product photography, reels production — content that makes your brand look as good as it is.</div>
+    </div>
+    <div class="addon-card reveal reveal-d3">
+      <div class="addon-icon">🖨️</div>
+      <div class="addon-name">Print & Production</div>
+      <div class="addon-tag">Physical Collateral</div>
+      <div class="addon-desc">Banners, standees, invitations, brochures, catalogues — every piece of print your brand needs, designed and produced.</div>
+    </div>
+    <div class="addon-card reveal reveal-d4">
+      <div class="addon-icon">💳</div>
+      <div class="addon-name">NFC Smart Cards</div>
+      <div class="addon-tag">BLVCKCARD Partner</div>
+      <div class="addon-desc">Digital business cards powered by BLVCKCARD — tap to share your contact, social, and portfolio instantly with anyone.</div>
+    </div>
+    <div class="addon-card reveal reveal-d5">
+      <div class="addon-icon">👕</div>
+      <div class="addon-name">Brand Merchandise</div>
+      <div class="addon-tag">New</div>
+      <div class="addon-desc">T-shirts, mugs, notebooks, tote bags — branded merchandise that turns your identity into something people wear and carry.</div>
+      <div class="addon-new-badge">New</div>
+    </div>
+    <div class="addon-card reveal" style="transition-delay:.6s">
+      <div class="addon-icon">🍽️</div>
+      <div class="addon-name">Menu & F&B Branding</div>
+      <div class="addon-tag">New</div>
+      <div class="addon-desc">Menus, table cards, packaging and complete visual identity for restaurants, cafes and food businesses in Jaipur and beyond.</div>
+      <div class="addon-new-badge">New</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" id="contact">
+  <div class="cta-eye reveal">Ready to Begin?</div>
+  <h2 class="cta-title reveal">Ready to<br><em>Create?</em></h2>
+  <p class="cta-sub reveal">Whether you need one service or all four — let's start a conversation. Your next great experience starts with one message.</p>
+  <div class="cta-actions reveal">
+    <a href="mailto:hello@marcelinestudio.in" class="btn-red">Start a Project</a>
+    <a href="tel:+919876543210" class="btn-outline">Call Satyam</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo-d"></div>
+        <span class="footer-logo-t">MARCELINE</span>
+      </div>
+      <p class="footer-tagline">"Where every idea finds its form."</p>
+      <p class="footer-addr">Satyam Mittal · Founder<br>Jaipur, Rajasthan, India<br>hello@marcelinestudio.in</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="#services">Branding</a>
+      <a href="#services">Events</a>
+      <a href="#services">Marketing</a>
+      <a href="#services">Digital</a>
+      <a href="#addons">Add-ons</a>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <a href="#about">About Us</a>
+      <a href="#why">Why Marceline</a>
+      <a href="#process">Our Process</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a href="mailto:hello@marcelinestudio.in">hello@marcelinestudio.in</a>
+      <a href="tel:+919876543210">+91 98765 43210</a>
+      <a href="#">Jaipur, Rajasthan, India</a>
+      <div class="footer-social">
+        <a href="#" title="Instagram">In</a>
+        <a href="#" title="LinkedIn">Li</a>
+        <a href="#" title="Twitter">Tw</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 Marceline Studio. All rights reserved.</p>
+    <p>Designed & Built by <a href="#">Marceline Studio</a></p>
+  </div>
+</footer>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const loader=document.getElementById('loader');
+    loader.style.opacity='0';
+    loader.style.transition='opacity .5s ease';
+    setTimeout(()=>loader.style.display='none',500);
+  },2200);
+});
+
+// ── CURSOR ──
+const cur=document.getElementById('cur');
+const curLabel=document.getElementById('cur-label');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  cx+=(mx-cx)*.13;cy+=(my-cy)*.13;
+  cur.style.left=cx+'px';cur.style.top=cy+'px';
+  curLabel.style.left=cx+'px';curLabel.style.top=cy+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('link'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('link'));
+});
+document.querySelectorAll('.service-img,.hero-img-wrap,.addon-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.classList.add('img');curLabel.classList.add('show')});
+  el.addEventListener('mouseleave',()=>{cur.classList.remove('img');curLabel.classList.remove('show')});
+});
+
+// ── NAV ──
+const navbar=document.getElementById('navbar');
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('solid',window.scrollY>60);
+});
+
+// ── MOBILE MENU ──
+function toggleMob(){
+  const m=document.getElementById('mobMenu');
+  const b=document.getElementById('burger');
+  m.classList.toggle('open');
+  b.classList.toggle('open');
+}
+function closeMob(){
+  document.getElementById('mobMenu').classList.remove('open');
+  document.getElementById('burger').classList.remove('open');
+}
+
+// ── SCROLL REVEAL ──
+const reveals=document.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.1});
+reveals.forEach(r=>ro.observe(r));
+
+// ── TESTIMONIALS ──
+const testis=[
+  {q:'"Marceline Studio turned our corporate event into an experience our clients are still talking about. Every detail was handled with precision and care."',a:'Rahul Verma · Marketing Director, RetailCo Jaipur'},
+  {q:'"Their branding work transformed how people see our company. We went from being just another business to a brand people actually remember and respect."',a:'Priya Sharma · Founder, Bloom Skincare'},
+  {q:'"The social media campaigns they ran tripled our enquiries in two months. Transparent, creative, and genuinely invested in our success."',a:'Arjun Singh · Director, Nexus Hospitality'}
+];
+let ti=0;
+function setT(i){
+  ti=i;
+  const q=document.getElementById('tq');
+  const a=document.getElementById('ta');
+  q.style.opacity=0;a.style.opacity=0;
+  setTimeout(()=>{q.textContent=testis[i].q;a.textContent=testis[i].a;q.style.opacity=1;a.style.opacity=1;},350);
+  document.querySelectorAll('.td').forEach((d,j)=>d.classList.toggle('active',j===i));
+}
+setInterval(()=>setT((ti+1)%testis.length),5000);
+</script>
+</body>
+</html>
